@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    :root {
+      color-scheme: light dark;
+    }
+    body {
+      width: 380px;
+      margin: 0;
+      padding: 12px 14px 14px;
+      font: 13px/1.45 -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: #1f1f1f;
+      background: #fff;
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 15px;
+    }
+    label {
+      display: block;
+      margin: 8px 0 3px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #5f6368;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 6px 8px;
+      border: 1px solid #c8c8c8;
+      border-radius: 6px;
+      font: inherit;
+    }
+    input[type="text"]:focus {
+      outline: 2px solid #1a73e8;
+      outline-offset: -1px;
+    }
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    button {
+      padding: 6px 14px;
+      border: 1px solid #c8c8c8;
+      border-radius: 6px;
+      background: #f8f9fa;
+      font: inherit;
+      cursor: pointer;
+    }
+    button.primary {
+      background: #1a73e8;
+      border-color: #1a73e8;
+      color: #fff;
+    }
+    button.icon {
+      padding: 3px 8px;
+      font-size: 12px;
+    }
+    #status {
+      margin: 6px 0 0;
+      min-height: 16px;
+      font-size: 12px;
+      color: #188038;
+    }
+    .hint {
+      margin: 6px 0 0;
+      font-size: 11.5px;
+      color: #5f6368;
+    }
+    .scopes {
+      display: flex;
+      gap: 16px;
+      margin-top: 3px;
+    }
+    .scopes label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin: 0;
+      font-size: 12.5px;
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+      color: inherit;
+      cursor: pointer;
+    }
+    .badge {
+      flex-shrink: 0;
+      font-size: 10px;
+      font-weight: 600;
+      background: #e8f0fe;
+      color: #1a73e8;
+      border-radius: 8px;
+      padding: 1px 7px;
+    }
+    hr {
+      margin: 12px 0;
+      border: 0;
+      border-top: 1px solid #e4e4e4;
+    }
+    ul.rules {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    li.rule {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 0;
+      border-top: 1px solid #f0f0f0;
+    }
+    li.rule .texts {
+      flex: 1;
+      min-width: 0;
+    }
+    li.rule .name {
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    li.rule .pattern {
+      font-size: 11px;
+      color: #5f6368;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    li.rule.disabled .texts {
+      opacity: 0.45;
+    }
+    .empty {
+      color: #5f6368;
+      font-size: 12px;
+    }
+    @media (prefers-color-scheme: dark) {
+      body { background: #292a2d; color: #e8eaed; }
+      label { color: #9aa0a6; }
+      input[type="text"] { background: #202124; border-color: #5f6368; color: #e8eaed; }
+      button { background: #303134; border-color: #5f6368; color: #e8eaed; }
+      .badge { background: #3c4a63; color: #8ab4f8; }
+      hr, li.rule { border-color: #3c4043; }
+      li.rule .pattern { color: #9aa0a6; }
+      .empty { color: #9aa0a6; }
+    }
+  </style>
+</head>
+<body>
+  <h1>TabRename</h1>
+
+  <form id="rule-form">
+    <label>Scope</label>
+    <div class="scopes">
+      <label class="radio"><input type="radio" name="scope" value="tab" checked> This tab only</label>
+      <label class="radio"><input type="radio" name="scope" value="url"> All matching URLs</label>
+    </div>
+
+    <label for="pattern">URL pattern</label>
+    <input id="pattern" type="text" spellcheck="false" placeholder="https://example.com/*">
+
+    <label for="title">Tab title</label>
+    <input id="title" type="text" spellcheck="false" placeholder="My custom title">
+
+    <div class="actions">
+      <button type="submit" class="primary" id="save">Rename tab</button>
+      <button type="button" id="cancel" hidden>Cancel edit</button>
+    </div>
+    <p id="status"></p>
+    <p class="hint"><strong>This tab only</strong> renames the tab you're on; it survives reloads but dies when the tab or browser closes. <strong>All matching URLs</strong> renames every page whose URL matches the pattern (<code>*</code> is a wildcard) and syncs across devices.</p>
+  </form>
+
+  <hr>
+
+  <ul class="rules" id="rules"></ul>
+  <p class="empty" id="empty" hidden>No rules yet. Rename your first tab above.</p>
+
+  <script src="popup.js"></script>
+</body>
+</html>

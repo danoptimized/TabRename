@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "TabRename",
+  "version": "1.1.0",
+  "description": "Rename tabs: this tab only, or permanently by URL pattern. Survives reloads and site title rewrites.",
+  "permissions": ["storage", "tabs", "contextMenus"],
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "TabRename"
+  }
+}
