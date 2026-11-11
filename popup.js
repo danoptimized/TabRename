@@ -9,7 +9,7 @@ const emptyEl = document.getElementById("empty");
 const scopeInputs = document.querySelectorAll('input[name="scope"]');
 
 let urlRules = []; // chrome.storage.sync rules, keyed by rule id
-let tabRules = {}; // chrome.storage.session rules, keyed by tab id
+let tabRules = {}; // chrome.storage.local rules, keyed by tab id
 let activeTab = null;
 let editing = null; // { kind: "tab", tabId, title, url } or { kind: "url", id, pattern, title, enabled }
 let statusTimer = null;
@@ -93,7 +93,7 @@ function addRuleRow(entry) {
     entry.enabled = enabled.checked;
     if (entry.kind === "tab") {
       tabRules[entry.tabId] = { title: entry.title, url: entry.url, enabled: entry.enabled };
-      await chrome.storage.session.set({ tabRules });
+      await chrome.storage.local.set({ tabRules });
       await nudgeTab(entry.tabId);
     } else {
       const rule = urlRules.find((r) => r.id === entry.id);
@@ -124,7 +124,7 @@ function addRuleRow(entry) {
   deleteButton.addEventListener("click", async () => {
     if (entry.kind === "tab") {
       delete tabRules[entry.tabId];
-      await chrome.storage.session.set({ tabRules });
+      await chrome.storage.local.set({ tabRules });
       await nudgeTab(entry.tabId);
     } else {
       urlRules = urlRules.filter((r) => r.id !== entry.id);
@@ -160,7 +160,7 @@ form.addEventListener("submit", async (event) => {
   if (editing) {
     if (editing.kind === "tab") {
       tabRules[editing.tabId] = { ...tabRules[editing.tabId], title };
-      await chrome.storage.session.set({ tabRules });
+      await chrome.storage.local.set({ tabRules });
       await nudgeTab(editing.tabId);
       setStatus("Tab renamed");
     } else {
@@ -178,7 +178,7 @@ form.addEventListener("submit", async (event) => {
       return;
     }
     tabRules[activeTab.id] = { title, url: activeTab.url, enabled: true };
-    await chrome.storage.session.set({ tabRules });
+    await chrome.storage.local.set({ tabRules });
     await nudgeTab(activeTab.id);
     setStatus("Tab renamed (this tab only)");
   } else {
@@ -230,13 +230,13 @@ async function getTargetTab() {
 }
 
 async function init() {
-  const [{ rules }, session, tab] = await Promise.all([
+  const [{ rules }, local, tab] = await Promise.all([
     chrome.storage.sync.get("rules"),
-    chrome.storage.session.get("tabRules"),
+    chrome.storage.local.get("tabRules"),
     getTargetTab(),
   ]);
   urlRules = Array.isArray(rules) ? rules : [];
-  tabRules = session.tabRules ?? {};
+  tabRules = local.tabRules ?? {};
   activeTab = tab;
   renderRules();
 

@@ -17,10 +17,10 @@ in the toolbar. The popup prefills that tab's URL and title. Pick a scope and
 click **Rename tab**:
 
 - **This tab only** — renames just this tab. It survives reloads and the tab's
-  own title rewrites, follows the tab if it's discarded and restored, and is
-  cleaned up when the tab closes. It applies only while the tab stays on the
-  URL it was renamed on, and it disappears on browser restart (tab IDs don't
-  survive restarts).
+  own title rewrites, follows the tab if it's discarded and restored, and
+  survives browser restarts: at startup the rename re-attaches to any restored
+  tab sitting on the URL it was renamed on. It applies only while the tab
+  stays on the URL it was renamed on.
 - **All matching URLs** — renames every page whose URL matches the pattern,
   now and in the future. Patterns use `*` as a wildcard:
 
@@ -30,9 +30,9 @@ click **Rename tab**:
 | `https://mail.google.com/mail/*` | Anything under Gmail's mail view |
 | `https://example.com/*` | Anything on example.com |
 
-Rules live in `chrome.storage.sync` (URL rules) and `chrome.storage.session`
+Rules live in `chrome.storage.sync` (URL rules) and `chrome.storage.local`
 (tab rules), so URL rules sync across signed-in Chrome instances while tab
-rules stay local to this browser session. Rules can be toggled, edited, or
+rules stay local to this browser. Rules can be toggled, edited, or
 deleted from the popup; opening the popup on a page that already has a rule
 opens that rule for editing (a tab-specific rule wins if both exist).
 
@@ -40,7 +40,7 @@ opens that rule for editing (a tab-specific rule wins if both exist).
 
 - `manifest.json` — MV3 manifest; injects `content.js` into every page at `document_start`.
 - `content.js` — matches the page URL against your rules, sets `document.title`, and keeps re-applying it via a `MutationObserver`.
-- `background.js` — service worker; resolves tab-specific rules for content scripts (only it knows tab IDs), cleans them up when tabs close, and owns the right-click tab menu item.
+- `background.js` — service worker; resolves tab-specific rules for content scripts (only it knows tab IDs), re-attaches them to restored tabs after a browser restart, cleans them up when tabs close, and owns the right-click tab menu item.
 - `popup.html` / `popup.js` — rule management UI.
 
 ## Limits
